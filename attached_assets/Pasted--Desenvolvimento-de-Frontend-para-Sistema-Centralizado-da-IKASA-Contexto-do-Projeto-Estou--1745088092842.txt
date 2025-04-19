@@ -1,0 +1,149 @@
+# Desenvolvimento de Frontend para Sistema Centralizado da IKASA
+
+## Contexto do Projeto
+
+Estou desenvolvendo um sistema centralizado para a empresa IKASA, que atua nos setores de contabilidade e imobiliária. O sistema substituirá múltiplas plataformas (Monday, Notion, Power BI) atualmente utilizadas, com o objetivo de unificar informações, reduzir custos e aumentar a eficiência operacional. O idioma do sistema deve ser em pt-br
+
+## Tecnologias Requeridas
+
+- **Framework**: React
+- **Build Tool**: Vite
+- **Estilização**: Tailwind CSS
+- **Gerenciamento de Estado**: Redux Toolkit ou Context API
+- **Autenticação**: JWT com refresh tokens
+- **Validação de Formulários**: React Hook Form + Yup/Zod
+
+## Requisitos do Sistema
+
+### Arquitetura Geral
+
+- Desenvolver uma aplicação SPA (Single Page Application) com arquitetura modular
+- Implementar padrão de design system consistente
+- Criar estrutura de componentes reutilizáveis
+- Garantir responsividade para diferentes dispositivos
+- Seguir princípios de acessibilidade WCAG 2.1 AA
+
+### Sistema de Autenticação e Autorização
+
+- Implementar login seguro com autenticação em dois fatores (2FA)
+- Desenvolver sistema de permissões baseado em funções (RBAC)
+- Criar os seguintes níveis de acesso:
+  1. **Administrador**: Acesso total a todas as funcionalidades
+  2. **Gerente**: Acesso a relatórios e aprovações, sem configurações avançadas
+  3. **Operador**: Acesso para editar e inserir dados em módulos específicos
+  4. **Visualizador**: Acesso apenas para visualização de dados, sem permissão para inserção ou edição
+  5. **Cliente**: Acesso a dados específicos ao seu perfil (para futura expansão)
+- Implementar controle de acesso em nível de componente (ocultar ou desabilitar elementos com base na permissão)
+- Criar telas de visualização específicas para usuários sem permissão de edição
+
+### Segurança Web
+
+- Implementar proteção contra CSRF (Cross-Site Request Forgery)
+- Aplicar sanitização de inputs para prevenir XSS (Cross-Site Scripting)
+- Utilizar HTTPS para todas as comunicações
+- Implementar proteção contra ataques de força bruta no login
+- Criar sistema de logs para auditoria de ações críticas
+- Garantir timeouts de sessão adequados
+- Implementar validação de dados tanto no cliente quanto no servidor
+
+### Módulos Principais
+
+#### 1. Cadastros Básicos
+- Formulários para cadastro de pessoas (clientes, locadores, locatários)
+- Gestão de imóveis
+- Cadastro de empresas
+- Gerenciamento de categorias e classificações
+
+#### 2. Gestão Financeira
+- Interface para controle de contas a pagar
+- Sistema de cobranças com status e histórico
+- Conciliação bancária
+- Tela para classificação de despesas
+
+#### 3. Administração Imobiliária
+- Cadastro e gestão de contratos
+- Visualização de status de imóveis
+- Acompanhamento de locações
+- Gestão de pagamentos e repasses
+
+#### 4. Relatórios e Dashboards
+- Painéis interativos personalizáveis
+- Filtros avançados para dados
+- Visualizações gráficas de KPIs
+- Exportação de relatórios em diversos formatos
+
+### Considerações de UX/UI
+
+- Criar interface intuitiva que minimize o tempo de aprendizagem
+- Implementar feedback visual para ações dos usuários
+- Desenvolver sistema de notificações e alertas
+- Criar sistema de ajuda contextual
+- Utilizar padrões de design consistentes ao longo da aplicação
+- Implementar temas claro/escuro
+
+### Requisitos Específicos de Segurança e Permissões
+
+1. **Controle Granular de Acesso**:
+   - Permissões por módulo (visualizar, adicionar, editar, excluir)
+   - Permissões por entidade (acesso a tipos específicos de dados)
+   - Permissões por operação (aprovação de pagamentos, conciliação, etc.)
+
+2. **Visualizadores de Dados**:
+   - Criar interfaces específicas para usuários com permissão apenas de visualização
+   - Remover ou desabilitar todos os controles de edição nas telas de visualização
+   - Implementar componentes de tabela e detalhamento read-only
+   - Permitir filtragem e exportação de dados, mas não modificação
+
+3. **Auditoria e Logs**:
+   - Registrar todas as operações de edição e exclusão
+   - Implementar visualização de histórico de alterações
+   - Criar relatórios de atividade por usuário
+
+## Exemplos de Fluxos de Usuário
+
+1. **Fluxo de Pagamento (Operador)**:
+   - Receber uma conta
+   - Cadastrar/atualizar informações
+   - Classificar a conta
+   - Agendar pagamento
+   - Registrar pagamento realizado
+   - Conciliar pagamento
+
+2. **Fluxo de Contrato (Visualizador)**:
+   - Consultar contratos existentes
+   - Visualizar detalhes de um contrato
+   - Exportar informações do contrato
+   - Ver histórico de pagamentos relacionados
+   - (Sem opção para editar ou criar novos contratos)
+
+3. **Fluxo de Gestão Imobiliária (Gerente)**:
+   - Visualizar dashboard de ocupação
+   - Analisar relatórios de inadimplência
+   - Aprovar ou rejeitar ajustes de valores
+   - Consultar histórico de contratos
+
+## Layouts e Protótipos
+
+Por favor, desenvolva:
+
+1. Um layout de dashboard principal demonstrando KPIs fundamentais
+2. Uma tela de cadastro de imóvel com campos essenciais
+3. Um protótipo para visualização de contratos (modo visualizador)
+4. Uma tela de gerenciamento de permissões de usuários
+
+## Considerações Técnicas Adicionais
+
+- Implementar cache de dados para melhorar performance
+- Utilizar lazy loading para carregar componentes sob demanda
+- Implementar tratamento de erros e exibição de mensagens amigáveis
+- Criar sistema de formulários dinâmicos para facilitar manutenção
+- Desenvolver sistema de temas e variáveis CSS para facilitar customização
+- Implementar estratégias de otimização de performance (code splitting, memoization)
+
+## Entregáveis Esperados
+
+1. Código fonte completo da aplicação frontend
+2. Design system documentado
+3. Documentação técnica da arquitetura
+4. Guia de implementação de novos componentes
+5. Relatório de testes de segurança e acessibilidade
