@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useSidebar } from "@/context/SidebarContext";
 import { useTheme } from "@/context/ThemeContext";
-import { useAuth } from "@/hooks/use-auth";
+import { useAuthContext } from "@/context/AuthContext";
 import { getInitials } from "@/lib/utils";
 import { useLocation } from "wouter";
 import { 
@@ -28,15 +28,19 @@ export default function Header() {
   const { toggleSidebar } = useSidebar();
   const [location] = useLocation();
   const { theme, setTheme } = useTheme();
-  const { user, logoutMutation } = useAuth();
+  const { currentUser, logout } = useAuthContext();
   
   const getUserInitials = () => {
-    if (!user) return "U";
-    return getInitials(user.username);
+    if (!currentUser) return "U";
+    return getInitials(currentUser.username);
   };
   
-  const handleLogout = () => {
-    logoutMutation.mutate();
+  const handleLogout = async () => {
+    try {
+      await logout();
+    } catch (error) {
+      console.error("Falha no logout:", error);
+    }
   };
   
   // Get page title based on current location
@@ -170,7 +174,7 @@ export default function Header() {
               </div>
               <div className="hidden md:block text-left">
                 <div className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                  {user?.username || "Usuário"}
+                  {currentUser?.username || "Usuário"}
                 </div>
                 <div className="text-xs text-gray-500 dark:text-gray-400">
                   Administrador
