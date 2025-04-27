@@ -1,0 +1,175 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Main colors */
+    --background: 0 0% 98%;
+    --foreground: 222 47% 11%;
+    
+    /* Card */
+    --card: 0 0% 100%;
+    --card-foreground: 222 47% 11%;
+    
+    /* Popover */
+    --popover: 0 0% 100%;
+    --popover-foreground: 222 47% 11%;
+    
+    /* Primary */
+    --primary: 213 76% 28%;
+    --primary-foreground: 0 0% 100%;
+    
+    /* Secondary */
+    --secondary: 122 39% 49%;
+    --secondary-foreground: 0 0% 100%;
+    
+    /* Accent */
+    --accent: 17 100% 60%;
+    --accent-foreground: 0 0% 100%;
+    
+    /* Muted */
+    --muted: 210 40% 96%;
+    --muted-foreground: 215 16% 47%;
+    
+    /* Border */
+    --border: 214 32% 91%;
+    --input: 214 32% 91%;
+    
+    /* Ring */
+    --ring: 213 76% 28%;
+    
+    /* Destructive */
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+
+    /* Status */
+    --status-error: 354 70% 54%;
+    --status-warning: 45 100% 51%;
+    --status-info: 188 78% 41%;
+    --status-success: 134 61% 41%;
+    
+    /* Charts */
+    --chart-1: 213 76% 28%;
+    --chart-2: 122 39% 49%;
+    --chart-3: 17 100% 60%;
+    --chart-4: 188 78% 41%;
+    --chart-5: 134 61% 41%;
+    
+    /* Sidebar */
+    --sidebar-background: 0 0% 100%;
+    --sidebar-foreground: 222 47% 11%;
+    --sidebar-primary: 213 76% 28%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 214 32% 91%;
+    --sidebar-accent-foreground: 215 25% 27%;
+    --sidebar-border: 214 32% 91%;
+    --sidebar-ring: 213 76% 28%;
+    
+    --radius: 0.5rem;
+  }
+ 
+  .dark {
+    /* Main colors */
+    --background: 222 47% 11%;
+    --foreground: 0 0% 98%;
+    
+    /* Card */
+    --card: 222 47% 11%;
+    --card-foreground: 210 40% 98%;
+    
+    /* Popover */
+    --popover: 222 47% 11%;
+    --popover-foreground: 210 40% 98%;
+    
+    /* Primary */
+    --primary: 210 63% 43%;
+    --primary-foreground: 0 0% 100%;
+    
+    /* Secondary */
+    --secondary: 122 39% 45%;
+    --secondary-foreground: 0 0% 100%;
+    
+    /* Accent */
+    --accent: 17 90% 55%;
+    --accent-foreground: 0 0% 100%;
+    
+    /* Muted */
+    --muted: 217 33% 17%;
+    --muted-foreground: 215 20% 65%;
+    
+    /* Border */
+    --border: 217 33% 17%;
+    --input: 217 33% 17%;
+    
+    /* Ring */
+    --ring: 210 63% 43%;
+    
+    /* Destructive */
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+
+    /* Charts */
+    --chart-1: 210 63% 43%;
+    --chart-2: 122 39% 45%;
+    --chart-3: 17 90% 55%;
+    --chart-4: 188 78% 41%;
+    --chart-5: 134 61% 41%;
+    
+    /* Sidebar */
+    --sidebar-background: 222 47% 11%;
+    --sidebar-foreground: 210 40% 98%;
+    --sidebar-primary: 210 63% 43%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 217 33% 17%;
+    --sidebar-accent-foreground: 210 40% 98%;
+    --sidebar-border: 217 33% 17%;
+    --sidebar-ring: 210 63% 43%;
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans;
+  }
+}
+
+/* Sidebar active item styling */
+.sidebar-item.active {
+  @apply bg-primary/10 border-l-4 border-primary;
+}
+
+.dark .sidebar-item.active {
+  @apply bg-primary/20 border-l-4 border-primary;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  @apply w-1.5 h-1.5;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-muted;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-muted-foreground/50 rounded-sm;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-muted-foreground/70;
+}
+
+.dark ::-webkit-scrollbar-track {
+  @apply bg-muted;
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  @apply bg-muted-foreground/50;
+}
+
+.dark ::-webkit-scrollbar-thumb:hover {
+  @apply bg-muted-foreground/70;
+}
