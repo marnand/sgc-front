@@ -18,13 +18,30 @@ const loginSchema = z.object({
 });
 
 const registerSchema = z.object({
-  username: z.string().min(3, "Nome de usuário deve ter pelo menos 3 caracteres"),
+  name: z.string()
+    .min(3, "Nome deve ter pelo menos 3 caracteres")
+    .refine((value) => value.trim().includes(" "), {
+      message: "Digite nome e sobrenome"
+    })
+    .refine((value) => /^[A-Za-zÀ-ÿ\s]*$/.test(value), {
+      message: "Nome não pode conter números ou caracteres especiais"
+    }),
+  username: z.string().min(3, "Usuário deve ter pelo menos 3 caracteres"),
   password: z.string().min(6, "Senha deve ter pelo menos 6 caracteres"),
+  email: z.string().email("Email inválido"),
   confirmPassword: z.string().min(1, "Confirme sua senha"),
 }).refine((data) => data.password === data.confirmPassword, {
   message: "As senhas não conferem",
   path: ["confirmPassword"],
 });
+
+// Helper function to remove accents and special characters
+const normalizeText = (text: string) => {
+  return text
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '') // Remove accents
+    .replace(/[^A-Za-z\s]/g, ''); // Remove special characters and numbers
+};
 
 type LoginFormValues = z.infer<typeof loginSchema>;
 type RegisterFormValues = z.infer<typeof registerSchema>;
@@ -32,7 +49,7 @@ type RegisterFormValues = z.infer<typeof registerSchema>;
 export default function AuthPage() {
   const [activeTab, setActiveTab] = useState("login");
   const { currentUser, isLoading, login, register } = useAuthContext();
-  const [, navigate] = useLocation();
+  const [_, navigate] = useLocation();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Redirect if already logged in
@@ -40,7 +57,7 @@ export default function AuthPage() {
     if (currentUser) {
       navigate("/");
     }
-  }, [currentUser, navigate]);
+  }, [currentUser]);
 
   const loginForm = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
@@ -53,11 +70,31 @@ export default function AuthPage() {
   const registerForm = useForm<RegisterFormValues>({
     resolver: zodResolver(registerSchema),
     defaultValues: {
+      name: "",
+      email: "",
       username: "",
       password: "",
       confirmPassword: "",
     },
   });
+
+  // Updated effect to watch the name field and update username
+  useEffect(() => {
+    const subscription = registerForm.watch((value, { name }) => {
+      if (name === 'name') {
+        const fullName = value.name?.trim() || '';
+        if (fullName.includes(' ')) {
+          const normalizedName = normalizeText(fullName);
+          const [firstName, ...lastNames] = normalizedName.split(' ');
+          const lastNamePart = lastNames[lastNames.length - 1];
+          const generatedUsername = (firstName[0] + lastNamePart).toLowerCase();
+          registerForm.setValue('username', generatedUsername);
+        }
+      }
+    });
+
+    return () => subscription.unsubscribe();
+  }, [registerForm]);
 
   const onLoginSubmit = async (data: LoginFormValues) => {
     try {
@@ -74,12 +111,18 @@ export default function AuthPage() {
     try {
       setIsSubmitting(true);
       // Omit confirmPassword when submitting to the API
-      await register(data.username, data.password);
+      await register( data.name, data.email, data.username, data.password);
     } catch (error) {
       console.error("Registration failed:", error);
     } finally {
       setIsSubmitting(false);
     }
+  };
+
+  // Add this function to handle name input changes
+  const handleNameInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value.replace(/[0-9]/g, ''); // Remove numbers
+    return value;
   };
 
   return (
@@ -135,9 +178,9 @@ export default function AuthPage() {
                         )}
                       />
 
-                      <Button 
-                        type="submit" 
-                        className="w-full" 
+                      <Button
+                        type="submit"
+                        className="w-full"
                         disabled={isSubmitting}
                       >
                         {isSubmitting ? "Entrando..." : "Entrar"}
@@ -151,12 +194,52 @@ export default function AuthPage() {
                     <form onSubmit={registerForm.handleSubmit(onRegisterSubmit)} className="space-y-4">
                       <FormField
                         control={registerForm.control}
+                        name="name"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Nome</FormLabel>
+                            <FormControl>
+                              <Input
+                                placeholder="Digite seu nome"
+                                {...field}
+                                onChange={(e) => {
+                                  const value = handleNameInput(e);
+                                  field.onChange(value);
+                                }}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      <FormField
+                        control={registerForm.control}
                         name="username"
                         render={({ field }) => (
                           <FormItem>
                             <FormLabel>Usuário</FormLabel>
                             <FormControl>
-                              <Input placeholder="Escolha um nome de usuário" {...field} />
+                              <Input
+                                placeholder="Username será gerado automaticamente"
+                                {...field}
+                                disabled
+                                className="bg-muted"
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      <FormField
+                        control={registerForm.control}
+                        name="email"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Email</FormLabel>
+                            <FormControl>
+                              <Input placeholder="Digite seu email" {...field} />
                             </FormControl>
                             <FormMessage />
                           </FormItem>
@@ -191,9 +274,9 @@ export default function AuthPage() {
                         )}
                       />
 
-                      <Button 
-                        type="submit" 
-                        className="w-full" 
+                      <Button
+                        type="submit"
+                        className="w-full"
                         disabled={isSubmitting}
                       >
                         {isSubmitting ? "Registrando..." : "Registrar"}

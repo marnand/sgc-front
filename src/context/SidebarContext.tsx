@@ -14,7 +14,7 @@ const SidebarContext = createContext<SidebarContextType | undefined>(undefined);
 export function SidebarProvider({ children }: { children: ReactNode }) {
   const [isOpen, setIsOpen] = useState(true);
   const [expandedItems, setExpandedItems] = useState<string[]>([]);
-  
+
   // Handle responsive behavior
   useEffect(() => {
     const handleResize = () => {
@@ -24,32 +24,28 @@ export function SidebarProvider({ children }: { children: ReactNode }) {
         setIsOpen(true);
       }
     };
-    
+
     // Set initial state
     handleResize();
-    
+
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
-  
+
   const openSidebar = () => setIsOpen(true);
   const closeSidebar = () => setIsOpen(false);
   const toggleSidebar = () => setIsOpen(prev => !prev);
-  
+
   const toggleExpandedItem = (item: string) => {
-    setExpandedItems(prev => 
-      prev.includes(item) 
-        ? prev.filter(i => i !== item) 
-        : [...prev, item]
-    );
+    setExpandedItems(prev => prev.includes(item) ? prev.filter(i => i !== item) : [...prev, item]);
   };
-  
+
   return (
-    <SidebarContext.Provider 
-      value={{ 
-        isOpen, 
-        openSidebar, 
-        closeSidebar, 
+    <SidebarContext.Provider
+      value={{
+        isOpen,
+        openSidebar,
+        closeSidebar,
         toggleSidebar,
         expandedItems,
         toggleExpandedItem
@@ -62,10 +58,10 @@ export function SidebarProvider({ children }: { children: ReactNode }) {
 
 export const useSidebar = () => {
   const context = useContext(SidebarContext);
-  
+
   if (context === undefined) {
     throw new Error("useSidebar must be used within a SidebarProvider");
   }
-  
+
   return context;
 };

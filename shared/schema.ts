@@ -113,7 +113,7 @@ export type InsertProperty = z.infer<typeof insertPropertySchema>;
 export type InsertPerson = z.infer<typeof insertPersonSchema>;
 export type InsertContract = z.infer<typeof insertContractSchema>;
 
-export type User = typeof users.$inferSelect;
+//export type User = typeof users.$inferSelect;
 export type Property = typeof properties.$inferSelect;
 export type Person = typeof persons.$inferSelect;
 export type Contract = typeof contracts.$inferSelect;

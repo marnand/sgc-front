@@ -29,10 +29,11 @@ export default function Header() {
   const [location] = useLocation();
   const { theme, setTheme } = useTheme();
   const { currentUser, logout } = useAuthContext();
-  
+
   const getUserInitials = () => {
     if (!currentUser) return "U";
-    return getInitials(currentUser.username);
+    console.log("curr", currentUser)
+    return getInitials(currentUser.name);
   };
   
   const handleLogout = async () => {

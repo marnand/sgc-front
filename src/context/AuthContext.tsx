@@ -1,11 +1,9 @@
 import { createContext, useContext, useState, ReactNode, useEffect } from "react";
 import { UserData, UserRole } from "@/lib/types";
 import { apiRequest, queryClient, getQueryFn } from "@/lib/queryClient";
-import { User as SelectUser, InsertUser } from "@shared/schema";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
-
-// Removed the import of useAuth to fix circular dependency
+import { ResponseUser, User } from "@shared/domain/TypesUser";
 
 interface AuthContextProps {
   currentUser: UserData | null;
@@ -15,35 +13,36 @@ interface AuthContextProps {
   checkPermission: (permission: string) => boolean;
   hasRole: (roles: UserRole | UserRole[]) => boolean;
   
-  // Add authentication methods
   login: (username: string, password: string) => Promise<void>;
-  register: (username: string, password: string) => Promise<void>;
+  register: (name: string, email: string, username: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
 }
 
-const AuthContext = createContext<AuthContextProps | undefined>(undefined);
+const AuthContext = createContext<AuthContextProps | undefined>(undefined)
 
 export function AuthContextProvider({ children }: { children: ReactNode }) {
   const { toast } = useToast();
-  const [currentUser, setCurrentUser] = useState<UserData | null>(null);
+  const [currentUser, setCurrentUser] = useState<UserData | null>(null)
   
   // Default to most restricted role
-  const [userRole, setUserRole] = useState<UserRole>("viewer");
+  const [userRole, setUserRole] = useState<UserRole>("viewer")
   
   // Fetch current user data
-  const { data: user, isLoading } = useQuery<SelectUser | undefined, Error>({
-    queryKey: ["/api/user"],
+  const { data: dataUser, refetch: refetchUser, isLoading } = useQuery<ResponseUser | undefined, Error>({
+    queryKey: ["/user"],
     queryFn: getQueryFn({ on401: "returnNull" }),
   });
   
   // Login mutation
   const loginMutation = useMutation({
     mutationFn: async (credentials: { username: string; password: string }) => {
-      const res = await apiRequest("POST", "/api/login", credentials);
-      return await res.json();
+      const res = await apiRequest("POST", "/user/login", credentials);
+      return await res.json()
     },
-    onSuccess: (userData: SelectUser) => {
-      queryClient.setQueryData(["/api/user"], userData);
+    onSuccess: (data) => {
+      console.log("Login successful:", data.data);
+      localStorage.setItem('auth_token', data.data)
+      refetchUser()
     },
     onError: (error: Error) => {
       toast({
@@ -51,16 +50,16 @@ export function AuthContextProvider({ children }: { children: ReactNode }) {
         description: error.message,
         variant: "destructive",
       });
-    },
+    }
   });
   
   // Register mutation
   const registerMutation = useMutation({
-    mutationFn: async (credentials: { username: string; password: string }) => {
-      const res = await apiRequest("POST", "/api/register", credentials);
+    mutationFn: async (credentials: { name: string; email: string; username: string; password: string }) => {
+      const res = await apiRequest("POST", "/user", credentials);
       return await res.json();
     },
-    onSuccess: (userData: SelectUser) => {
+    onSuccess: (userData: User) => {
       queryClient.setQueryData(["/api/user"], userData);
     },
     onError: (error: Error) => {
@@ -79,6 +78,7 @@ export function AuthContextProvider({ children }: { children: ReactNode }) {
     },
     onSuccess: () => {
       queryClient.setQueryData(["/api/user"], null);
+      localStorage.removeItem('auth_token');
     },
     onError: (error: Error) => {
       toast({
@@ -95,8 +95,8 @@ export function AuthContextProvider({ children }: { children: ReactNode }) {
   };
   
   // Register method
-  const register = async (username: string, password: string) => {
-    await registerMutation.mutateAsync({ username, password });
+  const register = async (name: string, email: string, username: string, password: string) => {
+    await registerMutation.mutateAsync({ name, email, username, password });
   };
   
   // Logout method
@@ -106,23 +106,23 @@ export function AuthContextProvider({ children }: { children: ReactNode }) {
 
   // Update user data whenever auth status changes
   useEffect(() => {
-    if (user) {
+    if (dataUser?.data) {
       // In a full implementation, the backend would return the complete user data
       // with role information. For now, we're creating a mock user with admin role.
       setCurrentUser({
-        id: user.id.toString(),
-        name: user.username,
-        username: user.username,
-        email: `${user.username}@ikasa.com.br`, // Placeholder
-        role: "admin", // Default to admin for development
-        avatar: undefined
+        id: dataUser.data.id,
+        name: dataUser.data.name,
+        username: dataUser.data.username,
+        email: dataUser.data.email,
+        role: "admin",
+        avatar: dataUser.data.avatar
       });
       setUserRole("admin");
     } else {
       setCurrentUser(null);
       setUserRole("viewer");
     }
-  }, [user]);
+  }, [dataUser]);
 
   // Check if user has a specific permission
   const checkPermission = (permission: string): boolean => {

@@ -10,7 +10,7 @@ interface AppShellProps {
 export default function AppShell({ children }: AppShellProps) {
   return (
     <SidebarProvider>
-      <div className="flex h-screen overflow-hidden bg-background text-foreground">
+      <div className="flex overflow-hidden bg-background text-foreground">
         <Sidebar />
         <div className="flex-1 flex flex-col overflow-hidden">
           <Header />
