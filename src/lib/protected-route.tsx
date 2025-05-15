@@ -1,4 +1,4 @@
-import { useAuthContext } from "@/context/AuthContext";
+import { useAuthContext } from "@/context/Authentication/AuthContext";
 import { Loader2 } from "lucide-react";
 import { Redirect, Route } from "wouter";
 
@@ -9,7 +9,7 @@ export function ProtectedRoute({
   path: string;
   component: () => React.JSX.Element;
 }) {
-  const { currentUser, isLoading } = useAuthContext();
+  const { currentCollaborator, isLoading } = useAuthContext()
 
   if (isLoading) {
     return (
@@ -18,15 +18,15 @@ export function ProtectedRoute({
           <Loader2 className="h-8 w-8 animate-spin text-border" />
         </div>
       </Route>
-    );
+    )
   }
 
-  if (!currentUser) {
+  if (!currentCollaborator) {
     return (
       <Route path={path}>
         <Redirect to="/auth" />
       </Route>
-    );
+    )
   }
 
   return <Route path={path} component={Component} />

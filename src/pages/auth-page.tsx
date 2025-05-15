@@ -2,15 +2,15 @@ import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Building } from "lucide-react";
-import { useAuthContext } from "@/context/AuthContext";
+import { useAuthContext } from "@/context/Authentication/AuthContext";
 import { useLocation } from "wouter";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { useAuthentication } from "@/services/queries/useAuthentication";
 
 const loginSchema = z.object({
   username: z.string().min(1, "Usuário é obrigatório"),
@@ -47,17 +47,23 @@ type LoginFormValues = z.infer<typeof loginSchema>;
 type RegisterFormValues = z.infer<typeof registerSchema>;
 
 export default function AuthPage() {
-  const [activeTab, setActiveTab] = useState("login");
-  const { currentUser, isLoading, login, register } = useAuthContext();
-  const [_, navigate] = useLocation();
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [activeTab, setActiveTab] = useState("login")
+  const { currentCollaborator, refetch } = useAuthContext()
+  const [_, navigate] = useLocation()
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const { mutateAsync: login, status, isSuccess } = useAuthentication()
 
-  // Redirect if already logged in
   useEffect(() => {
-    if (currentUser) {
-      navigate("/");
+    if (currentCollaborator) {
+      navigate("/")
     }
-  }, [currentUser]);
+  }, [currentCollaborator])
+
+  useEffect(() => {
+    if (isSuccess) {
+      refetch()
+    }
+  }, [isSuccess])
 
   const loginForm = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
@@ -65,7 +71,7 @@ export default function AuthPage() {
       username: "",
       password: "",
     },
-  });
+  })
 
   const registerForm = useForm<RegisterFormValues>({
     resolver: zodResolver(registerSchema),
@@ -76,7 +82,7 @@ export default function AuthPage() {
       password: "",
       confirmPassword: "",
     },
-  });
+  })
 
   // Updated effect to watch the name field and update username
   useEffect(() => {
@@ -91,39 +97,22 @@ export default function AuthPage() {
           registerForm.setValue('username', generatedUsername);
         }
       }
-    });
+    })
 
-    return () => subscription.unsubscribe();
-  }, [registerForm]);
+    return () => subscription.unsubscribe()
+  }, [registerForm])
 
-  const onLoginSubmit = async (data: LoginFormValues) => {
-    try {
-      setIsSubmitting(true);
-      await login(data.username, data.password);
-    } catch (error) {
-      console.error("Login failed:", error);
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
+  const onLoginSubmit = async (data: LoginFormValues) => await login(data)
 
   const onRegisterSubmit = async (data: RegisterFormValues) => {
-    try {
-      setIsSubmitting(true);
-      // Omit confirmPassword when submitting to the API
-      await register( data.name, data.email, data.username, data.password);
-    } catch (error) {
-      console.error("Registration failed:", error);
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
+
+  }
 
   // Add this function to handle name input changes
   const handleNameInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value.replace(/[0-9]/g, ''); // Remove numbers
     return value;
-  };
+  }
 
   return (
     <div className="flex min-h-screen bg-muted/30">
@@ -140,6 +129,7 @@ export default function AuthPage() {
                 Sistema de gestão centralizado para contabilidade e imobiliária
               </CardDescription>
             </CardHeader>
+
             <CardContent>
               <Tabs defaultValue="login" value={activeTab} onValueChange={setActiveTab}>
                 <TabsList className="grid w-full grid-cols-2 mb-4">
@@ -181,9 +171,9 @@ export default function AuthPage() {
                       <Button
                         type="submit"
                         className="w-full"
-                        disabled={isSubmitting}
+                        disabled={status === "pending"}
                       >
-                        {isSubmitting ? "Entrando..." : "Entrar"}
+                        {status === "pending" ? "Entrando..." : "Entrar"}
                       </Button>
                     </form>
                   </Form>
@@ -361,5 +351,5 @@ export default function AuthPage() {
         </div>
       </div>
     </div>
-  );
+  )
 }
