@@ -29,7 +29,7 @@ export const useCreateCollaborator = () => {
       })
 
       setTimeout(() => {
-        window.location.href = "/auth";
+        window.location.href = "/";
       }, 3000)
     },
   })
