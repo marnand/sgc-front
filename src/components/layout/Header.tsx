@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useSidebar } from "@/context/SidebarContext";
 import { useTheme } from "@/context/ThemeContext";
-import { useAuthContext } from "@/context/AuthContext";
+import { useAuthContext } from "@/context/Authentication/AuthContext";
 import { getInitials } from "@/lib/utils";
 import { useLocation } from "wouter";
 import { 
@@ -28,20 +28,11 @@ export default function Header() {
   const { toggleSidebar } = useSidebar();
   const [location] = useLocation();
   const { theme, setTheme } = useTheme();
-  const { currentUser, logout } = useAuthContext();
+  const { currentCollaborator, logout } = useAuthContext();
 
   const getUserInitials = () => {
-    if (!currentUser) return "U";
-    console.log("curr", currentUser)
-    return getInitials(currentUser.name);
-  };
-  
-  const handleLogout = async () => {
-    try {
-      await logout();
-    } catch (error) {
-      console.error("Falha no logout:", error);
-    }
+    if (!currentCollaborator) return "U";
+    return getInitials(currentCollaborator.name);
   };
   
   // Get page title based on current location
@@ -175,7 +166,7 @@ export default function Header() {
               </div>
               <div className="hidden md:block text-left">
                 <div className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                  {currentUser?.username || "Usuário"}
+                  {currentCollaborator?.username || "Usuário"}
                 </div>
                 <div className="text-xs text-gray-500 dark:text-gray-400">
                   Administrador
@@ -206,7 +197,7 @@ export default function Header() {
               <span>Configurações</span>
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={handleLogout}>
+            <DropdownMenuItem onClick={logout}>
               <LogOut className="mr-2 h-4 w-4" />
               <span>Sair</span>
             </DropdownMenuItem>

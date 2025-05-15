@@ -1,15 +1,3 @@
-// User related types
-export type UserRole = "admin" | "manager" | "operator" | "viewer" | "client";
-
-export interface UserData {
-  id: string;
-  name: string;
-  username: string;
-  email: string;
-  role: UserRole;
-  avatar?: string;
-}
-
 // Dashboard related types
 export interface KpiData {
   title: string;

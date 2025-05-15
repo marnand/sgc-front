@@ -35,7 +35,6 @@ import {
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
-import { UserData, UserRole } from "@/lib/types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -66,6 +65,7 @@ import {
   PaginationNext, 
   PaginationPrevious 
 } from "@/components/ui/pagination";
+import { Collaborator, RoleEnum } from "@/types/types-collaborator";
 
 // Form schema for new user
 const userFormSchema = z.object({
@@ -85,7 +85,7 @@ export default function Usuarios() {
   const [roleFilter, setRoleFilter] = useState<string>("all");
   const [userModalOpen, setUserModalOpen] = useState(false);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
-  const [selectedUser, setSelectedUser] = useState<UserData | null>(null);
+  const [selectedUser, setSelectedUser] = useState<Collaborator | null>(null);
   const [permissionsModalOpen, setPermissionsModalOpen] = useState(false);
   
   // Initialize form for new user
@@ -115,41 +115,14 @@ export default function Usuarios() {
   }
   
   // Mock users data (would be fetched from API)
-  const users: UserData[] = [
+  const users: Collaborator[] = [
     {
       id: "1",
       name: "Bruna Lima",
       username: "bruna.lima",
       email: "bruna.lima@ikasa.com.br",
-      role: "admin"
-    },
-    {
-      id: "2",
-      name: "Carlos Santos",
-      username: "carlos.santos",
-      email: "carlos.santos@ikasa.com.br",
-      role: "manager"
-    },
-    {
-      id: "3",
-      name: "Pedro Almeida",
-      username: "pedro.almeida",
-      email: "pedro.almeida@ikasa.com.br",
-      role: "operator"
-    },
-    {
-      id: "4",
-      name: "Ana Sousa",
-      username: "ana.sousa",
-      email: "ana.sousa@ikasa.com.br",
-      role: "viewer"
-    },
-    {
-      id: "5",
-      name: "João Fernandes",
-      username: "joao.fernandes",
-      email: "joao.fernandes@cliente.com.br",
-      role: "client"
+      roleId: 1,
+      createdAt: ""
     }
   ];
   
@@ -160,9 +133,9 @@ export default function Usuarios() {
       user.username.toLowerCase().includes(searchTerm.toLowerCase()) ||
       user.email.toLowerCase().includes(searchTerm.toLowerCase());
     
-    const matchesRole = roleFilter === "all" || user.role === roleFilter;
+    //const matchesRole = roleFilter === 1 || user.roleId === roleFilter;
     
-    return matchesSearch && matchesRole;
+    return matchesSearch
   });
   
   // Calculate pagination
@@ -173,25 +146,26 @@ export default function Usuarios() {
   const displayedUsers = filteredUsers.slice(startIndex, endIndex);
   
   // Get role display name and badge color
-  const getRoleDisplay = (role: UserRole): { name: string; badgeClass: string } => {
-    switch (role) {
-      case "admin":
-        return { name: "Administrador", badgeClass: "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200" };
-      case "manager":
-        return { name: "Gerente", badgeClass: "bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200" };
-      case "operator":
-        return { name: "Operador", badgeClass: "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200" };
-      case "viewer":
-        return { name: "Visualizador", badgeClass: "bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200" };
-      case "client":
-        return { name: "Cliente", badgeClass: "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200" };
-      default:
-        return { name: "Desconhecido", badgeClass: "bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200" };
-    }
+  const getRoleDisplay = (role: RoleEnum): { name: string; badgeClass: string } => {
+    // switch (role) {
+    //   case "admin":
+    //     return { name: "Administrador", badgeClass: "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200" };
+    //   case "manager":
+    //     return { name: "Gerente", badgeClass: "bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200" };
+    //   case "operator":
+    //     return { name: "Operador", badgeClass: "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200" };
+    //   case "viewer":
+    //     return { name: "Visualizador", badgeClass: "bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200" };
+    //   case "client":
+    //     return { name: "Cliente", badgeClass: "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200" };
+    //   default:
+    //     return { name: "Desconhecido", badgeClass: "bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200" };
+    //   }
+    return { name: "Desconhecido", badgeClass: "bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200" };
   };
   
   // Handle opening the delete confirmation modal
-  const handleDeleteClick = (user: UserData) => {
+  const handleDeleteClick = (user: Collaborator) => {
     setSelectedUser(user);
     setDeleteModalOpen(true);
   };
@@ -213,7 +187,7 @@ export default function Usuarios() {
   };
   
   // Handle opening the permissions modal
-  const handlePermissionsClick = (user: UserData) => {
+  const handlePermissionsClick = (user: Collaborator) => {
     setSelectedUser(user);
     setPermissionsModalOpen(true);
   };
@@ -287,7 +261,7 @@ export default function Usuarios() {
             <TableBody>
               {displayedUsers.length > 0 ? (
                 displayedUsers.map((user) => {
-                  const roleInfo = getRoleDisplay(user.role);
+                  const roleInfo = getRoleDisplay(user.roleId);
                   
                   return (
                     <TableRow key={user.id}>
@@ -579,7 +553,7 @@ export default function Usuarios() {
                   Nome de usuário: <span className="font-medium">{selectedUser.username}</span>
                 </p>
                 <p className="text-sm text-muted-foreground">
-                  Papel: <span className="font-medium">{getRoleDisplay(selectedUser.role).name}</span>
+                  Papel: <span className="font-medium">{getRoleDisplay(selectedUser.roleId).name}</span>
                 </p>
               </div>
             </div>
@@ -626,8 +600,8 @@ export default function Usuarios() {
                   <p className="font-medium text-lg">{selectedUser.name}</p>
                   <div className="flex items-center gap-2">
                     <p className="text-sm text-muted-foreground">{selectedUser.email}</p>
-                    <Badge className={getRoleDisplay(selectedUser.role).badgeClass}>
-                      {getRoleDisplay(selectedUser.role).name}
+                    <Badge className={getRoleDisplay(selectedUser.roleId).badgeClass}>
+                      {getRoleDisplay(selectedUser.roleId).name}
                     </Badge>
                   </div>
                 </div>
@@ -658,19 +632,19 @@ export default function Usuarios() {
                     </div>
                     <div className="flex items-center justify-between space-x-2">
                       <Label htmlFor="perm-prop-edit" className="flex-1">Editar Imóveis</Label>
-                      <Switch id="perm-prop-edit" defaultChecked={["admin", "manager", "operator"].includes(selectedUser.role)} />
+                      {/* <Switch id="perm-prop-edit" defaultChecked={["admin", "manager", "operator"].includes(selectedUser.roleId)} /> */}
                     </div>
                     <div className="flex items-center justify-between space-x-2">
                       <Label htmlFor="perm-prop-create" className="flex-1">Criar Imóveis</Label>
-                      <Switch id="perm-prop-create" defaultChecked={["admin", "manager"].includes(selectedUser.role)} />
+                      {/* <Switch id="perm-prop-create" defaultChecked={["admin", "manager"].includes(selectedUser.roleId)} /> */}
                     </div>
                     <div className="flex items-center justify-between space-x-2">
                       <Label htmlFor="perm-prop-delete" className="flex-1">Excluir Imóveis</Label>
-                      <Switch id="perm-prop-delete" defaultChecked={["admin"].includes(selectedUser.role)} />
+                      {/* <Switch id="perm-prop-delete" defaultChecked={["admin"].includes(selectedUser.roleId)} /> */}
                     </div>
                     <div className="flex items-center justify-between space-x-2">
                       <Label htmlFor="perm-contract-approve" className="flex-1">Aprovar Contratos</Label>
-                      <Switch id="perm-contract-approve" defaultChecked={["admin", "manager"].includes(selectedUser.role)} />
+                      {/* <Switch id="perm-contract-approve" defaultChecked={["admin", "manager"].includes(selectedUser.roleId)} /> */}
                     </div>
                   </div>
                 </div>
@@ -695,23 +669,23 @@ export default function Usuarios() {
                   <div className="space-y-3">
                     <div className="flex items-center justify-between space-x-2">
                       <Label htmlFor="perm-fin-view" className="flex-1">Visualizar Financeiro</Label>
-                      <Switch id="perm-fin-view" defaultChecked={["admin", "manager", "operator"].includes(selectedUser.role)} />
+                      {/* <Switch id="perm-fin-view" defaultChecked={["admin", "manager", "operator"].includes(selectedUser.roleId)} /> */}
                     </div>
                     <div className="flex items-center justify-between space-x-2">
                       <Label htmlFor="perm-fin-payment" className="flex-1">Registrar Pagamentos</Label>
-                      <Switch id="perm-fin-payment" defaultChecked={["admin", "manager", "operator"].includes(selectedUser.role)} />
+                      {/* <Switch id="perm-fin-payment" defaultChecked={["admin", "manager", "operator"].includes(selectedUser.roleId)} /> */}
                     </div>
                     <div className="flex items-center justify-between space-x-2">
                       <Label htmlFor="perm-fin-approve" className="flex-1">Aprovar Transações</Label>
-                      <Switch id="perm-fin-approve" defaultChecked={["admin", "manager"].includes(selectedUser.role)} />
+                      {/* <Switch id="perm-fin-approve" defaultChecked={["admin", "manager"].includes(selectedUser.roleId)} /> */}
                     </div>
                     <div className="flex items-center justify-between space-x-2">
                       <Label htmlFor="perm-fin-reports" className="flex-1">Gerar Relatórios</Label>
-                      <Switch id="perm-fin-reports" defaultChecked={["admin", "manager"].includes(selectedUser.role)} />
+                      {/* <Switch id="perm-fin-reports" defaultChecked={["admin", "manager"].includes(selectedUser.roleId)} /> */}
                     </div>
                     <div className="flex items-center justify-between space-x-2">
                       <Label htmlFor="perm-fin-settings" className="flex-1">Configurações Financeiras</Label>
-                      <Switch id="perm-fin-settings" defaultChecked={["admin"].includes(selectedUser.role)} />
+                      {/* <Switch id="perm-fin-settings" defaultChecked={["admin"].includes(selectedUser.roleId)} /> */}
                     </div>
                   </div>
                 </div>
@@ -728,15 +702,15 @@ export default function Usuarios() {
                     </div>
                     <div className="flex items-center justify-between space-x-2">
                       <Label htmlFor="perm-people-edit" className="flex-1">Editar Pessoas</Label>
-                      <Switch id="perm-people-edit" defaultChecked={["admin", "manager", "operator"].includes(selectedUser.role)} />
+                      {/* <Switch id="perm-people-edit" defaultChecked={["admin", "manager", "operator"].includes(selectedUser.roleId)} /> */}
                     </div>
                     <div className="flex items-center justify-between space-x-2">
                       <Label htmlFor="perm-people-create" className="flex-1">Criar Pessoas</Label>
-                      <Switch id="perm-people-create" defaultChecked={["admin", "manager", "operator"].includes(selectedUser.role)} />
+                      {/* <Switch id="perm-people-create" defaultChecked={["admin", "manager", "operator"].includes(selectedUser.roleId)} /> */}
                     </div>
                     <div className="flex items-center justify-between space-x-2">
                       <Label htmlFor="perm-people-delete" className="flex-1">Excluir Pessoas</Label>
-                      <Switch id="perm-people-delete" defaultChecked={["admin"].includes(selectedUser.role)} />
+                      {/* <Switch id="perm-people-delete" defaultChecked={["admin"].includes(selectedUser.roleId)} /> */}
                     </div>
                   </div>
                 </div>
@@ -761,23 +735,23 @@ export default function Usuarios() {
                   <div className="space-y-3">
                     <div className="flex items-center justify-between space-x-2">
                       <Label htmlFor="perm-admin-users" className="flex-1">Gerenciar Usuários</Label>
-                      <Switch id="perm-admin-users" defaultChecked={["admin"].includes(selectedUser.role)} />
+                      {/* <Switch id="perm-admin-users" defaultChecked={["admin"].includes(selectedUser.roleId)} /> */}
                     </div>
                     <div className="flex items-center justify-between space-x-2">
                       <Label htmlFor="perm-admin-roles" className="flex-1">Gerenciar Papéis</Label>
-                      <Switch id="perm-admin-roles" defaultChecked={["admin"].includes(selectedUser.role)} />
+                      {/* <Switch id="perm-admin-roles" defaultChecked={["admin"].includes(selectedUser.roleId)} /> */}
                     </div>
                     <div className="flex items-center justify-between space-x-2">
                       <Label htmlFor="perm-admin-settings" className="flex-1">Configurações do Sistema</Label>
-                      <Switch id="perm-admin-settings" defaultChecked={["admin"].includes(selectedUser.role)} />
+                      {/* <Switch id="perm-admin-settings" defaultChecked={["admin"].includes(selectedUser.roleId)} /> */}
                     </div>
                     <div className="flex items-center justify-between space-x-2">
                       <Label htmlFor="perm-admin-logs" className="flex-1">Visualizar Logs</Label>
-                      <Switch id="perm-admin-logs" defaultChecked={["admin"].includes(selectedUser.role)} />
+                      {/* <Switch id="perm-admin-logs" defaultChecked={["admin"].includes(selectedUser.roleId)} /> */}
                     </div>
                     <div className="flex items-center justify-between space-x-2">
                       <Label htmlFor="perm-admin-backup" className="flex-1">Backup e Restauração</Label>
-                      <Switch id="perm-admin-backup" defaultChecked={["admin"].includes(selectedUser.role)} />
+                      {/* <Switch id="perm-admin-backup" defaultChecked={["admin"].includes(selectedUser.roleId)} /> */}
                     </div>
                   </div>
                 </div>

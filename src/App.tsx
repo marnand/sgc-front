@@ -9,7 +9,7 @@ import Pessoas from "@/pages/cadastros/pessoas";
 import Imoveis from "@/pages/cadastros/imoveis";
 import CadastroImovel from "@/pages/imoveis/cadastro";
 import Usuarios from "@/pages/usuarios";
-import { AuthContextProvider } from "@/context/AuthContext"; 
+import { AuthContextProvider } from "@/context/Authentication/AuthContext";
 
 function Router() {
   return (
@@ -22,7 +22,7 @@ function Router() {
       <ProtectedRoute path="/usuarios" component={Usuarios} />
       <Route component={NotFound} />
     </Switch>
-  );
+  )
 }
 
 function App() {
@@ -33,7 +33,7 @@ function App() {
         <Router />
       </AuthContextProvider>
     </TooltipProvider>
-  );
+  )
 }
 
-export default App;
+export default App
