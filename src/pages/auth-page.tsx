@@ -11,6 +11,8 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { useAuthentication } from "@/services/queries/useAuthentication";
+import { useCreateCollaborator } from "@/services/queries/useCollaborator";
+import { RegisterCollaboratorPayload, RoleEnum } from "@/types/types-collaborator";
 
 const loginSchema = z.object({
   username: z.string().min(1, "Usuário é obrigatório"),
@@ -50,8 +52,8 @@ export default function AuthPage() {
   const [activeTab, setActiveTab] = useState("login")
   const { currentCollaborator, refetch } = useAuthContext()
   const [_, navigate] = useLocation()
-  const [isSubmitting, setIsSubmitting] = useState(false)
   const { mutateAsync: login, status, isSuccess } = useAuthentication()
+  const { mutateAsync: createCollaborator, status: registerStatus } = useCreateCollaborator()
 
   useEffect(() => {
     if (currentCollaborator) {
@@ -105,7 +107,14 @@ export default function AuthPage() {
   const onLoginSubmit = async (data: LoginFormValues) => await login(data)
 
   const onRegisterSubmit = async (data: RegisterFormValues) => {
+    const payload: RegisterCollaboratorPayload = {
+      name: data.name,
+      username: data.username,
+      email: data.email,
+      password: data.password,
+    }
 
+    await createCollaborator(payload)
   }
 
   // Add this function to handle name input changes
@@ -267,9 +276,9 @@ export default function AuthPage() {
                       <Button
                         type="submit"
                         className="w-full"
-                        disabled={isSubmitting}
+                        disabled={registerStatus === "pending"}
                       >
-                        {isSubmitting ? "Registrando..." : "Registrar"}
+                        {registerStatus === "pending" ? "Registrando..." : "Registrar"}
                       </Button>
                     </form>
                   </Form>
