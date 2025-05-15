@@ -14,10 +14,9 @@ export interface Collaborator {
   updatedAt?: string
 }
 
-export interface CreateCollaboratorPayload {
+export interface RegisterCollaboratorPayload {
   name: string
   username: string
+  password: string
   email: string
-  roleId: RoleEnum
-  avatar?: string
 }

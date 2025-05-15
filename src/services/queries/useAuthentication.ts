@@ -8,6 +8,7 @@ export const useAuthentication = () => {
     mutationFn: (data: { username: string; password: string }) => authenticationService.login(data),
     onSuccess: (res) => {
       TokenStorage.set(res);
+      window.location.href = "/";
     },
     onError: (err) => {
       console.log(err)
