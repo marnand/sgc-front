@@ -10,7 +10,7 @@ export function AuthContextProvider({ children }: { children: ReactNode }) {
   const [currentCollaborator, setCurrentCollaborator] = useState<Collaborator | null>(null)
   const [loading, setLoading] = useState<boolean>(true)
   const [roleEnum, setRoleEnum] = useState<RoleEnum | null>(RoleEnum.Client)
-  const { data, refetch, isLoading } = useCurrentCollaborator()
+  const { data, refetch: refetchCurrentCollaborator, isLoading } = useCurrentCollaborator()
 
   const logout = () => {
     setCurrentCollaborator(null)
@@ -30,7 +30,7 @@ export function AuthContextProvider({ children }: { children: ReactNode }) {
     <AuthContext.Provider value={{
       currentCollaborator,
       setCurrentCollaborator,
-      refetch,
+      refetchCurrentCollaborator,
       logout,
       isLoading,
       roleEnum,

@@ -3,7 +3,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import NotFound from "@/pages/not-found";
 import Dashboard from "@/pages/dashboard";
-import AuthPage from "@/pages/auth-page";
+import AuthPage from "@/pages/auth/auth-page";
 import { ProtectedRoute } from "./lib/protected-route";
 import Pessoas from "@/pages/cadastros/pessoas";
 import Imoveis from "@/pages/cadastros/imoveis";
