@@ -68,12 +68,12 @@ export default function Sidebar() {
             onToggle={() => {}}
           >
             <li>
-              <Link href="/cadastros/pessoas">
+              <Link href="/cadastros/clientes">
                 <a className={cn(
                   "block py-2 text-gray-600 dark:text-gray-400 hover:text-primary dark:hover:text-primary-foreground",
-                  location === "/cadastros/pessoas" && "text-primary dark:text-primary-foreground font-medium"
+                  location === "/cadastros/clientes" && "text-primary dark:text-primary-foreground font-medium"
                 )}>
-                  Pessoas
+                  Clientes
                 </a>
               </Link>
             </li>
