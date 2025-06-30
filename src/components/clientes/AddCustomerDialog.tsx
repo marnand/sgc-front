@@ -1,17 +1,14 @@
 import { CoreDialog } from "@/components/core/CoreDialog";
-import { Customer } from "@/types/type-customer";
 import { CreateCustomerForm } from "./CreateCustomerForm";
 
 interface AddCustomerDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onSubmit: (data: Customer) => void;
 }
 
 export function AddCustomerDialog({
   open,
-  onOpenChange,
-  onSubmit,
+  onOpenChange
 }: AddCustomerDialogProps) {
 
   return (
@@ -24,7 +21,6 @@ export function AddCustomerDialog({
       <div className="px-4">
         <CreateCustomerForm
           onOpenChange={onOpenChange}
-          onSubmit={onSubmit}
         />
       </div>
     </CoreDialog>

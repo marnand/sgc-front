@@ -3,7 +3,7 @@ import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import PageHeader from "@/components/clientes/PageHeader";
 import { CustomerTable } from "@/components/clientes/CustomerTable";
-import { Customer } from "@/types/type-customer";
+import { Customer } from "@/types/types-customer";
 import { AddCustomerDialog } from "@/components/clientes/AddCustomerDialog";
 import { usePagination } from "@/hooks/use-pagination";
 import { ChevronDown, Filter, Search } from "lucide-react";
@@ -146,26 +146,6 @@ export default function Clientes() {
     endIndex
   } = usePagination(filteredClientes);
 
-  const handleAddCustomer = async (data: Customer) => {
-    try {
-      // Aqui seria feita a chamada à API para criar o cliente
-      console.log("Novo cliente:", data);
-      
-      toast({
-        title: "Cliente cadastrado com sucesso",
-        description: "O cliente foi adicionado ao sistema.",
-      });
-      
-      setIsAddDialogOpen(false);
-    } catch (error) {
-      toast({
-        title: "Erro ao cadastrar cliente",
-        description: "Ocorreu um erro ao tentar cadastrar o cliente.",
-        variant: "destructive",
-      });
-    }
-  };
-
   const handleViewCustomer = (customer: Customer) => {
     // Implementar visualização do cliente
     console.log("Visualizar cliente:", customer);
@@ -226,7 +206,6 @@ export default function Clientes() {
         <AddCustomerDialog
           open={isAddDialogOpen}
           onOpenChange={setIsAddDialogOpen}
-          onSubmit={handleAddCustomer}
         />
       </div>
     </AppShell>

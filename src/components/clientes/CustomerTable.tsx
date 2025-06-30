@@ -1,7 +1,7 @@
 import { formatCNPJ, formatCPF } from "@/lib/utils";
 import { CoreTable, Column, Action } from "@/components/core/CoreTable";
 import { Eye, Edit, Trash } from "lucide-react";
-import { Customer } from "@/types/type-customer";
+import { Customer } from "@/types/types-customer";
 
 interface CustomerTableProps {
   customers: Customer[];

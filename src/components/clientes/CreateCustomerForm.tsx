@@ -3,20 +3,24 @@ import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, For
 import { Input } from "../ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
 import { Switch } from "../ui/switch";
-import { Customer } from "@/types/type-customer";
+import { Customer, DocumentType, RegisterCustomer, TypeCustomer } from "@/types/types-customer";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import InputMask from "react-input-mask";
 import { CustomerFormData, customerSchema } from "./CreateCustomerSchema";
+import { useCreateCustomer } from "@/services/queries/useCustomer";
+import { RegisterAddress } from "@/types/type-address";
+import { AccountType, RegisterBankDetails } from "@/types/type-bank-details";
 
 interface CreateCustomerFormProps {
-  onSubmit: (data: Customer) => void;
   onOpenChange: (open: boolean) => void;
 }
 
-export function CreateCustomerForm({ onSubmit, onOpenChange }: CreateCustomerFormProps) {
+export function CreateCustomerForm({ onOpenChange }: CreateCustomerFormProps) {
   const [documentType, setDocumentType] = useState<"CPF" | "CNPJ">("CPF");
+
+  const { mutateAsync: createCustomer, isPending } = useCreateCustomer()
 
   const form = useForm<CustomerFormData>({
     resolver: zodResolver(customerSchema),
@@ -40,21 +44,49 @@ export function CreateCustomerForm({ onSubmit, onOpenChange }: CreateCustomerFor
         accountType: "Corrente"
       },
       documentNumber: "",
-      type: "Física",
+      type: "fisica",
       documentType: "CPF",
       hasBankDetails: false,
     },
   });
 
-  const handleSubmit = (data: CustomerFormData) => {
-    const customerData: Customer = {
-      ...data,
-      // Generate a temporary ID (in production this would come from the backend)
-      id: Math.random().toString(36).substring(7),
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    };
-    onSubmit(customerData);
+  const handleSubmit = async (data: CustomerFormData) => {
+    const payloadCustomer: RegisterCustomer = {
+      name: data.name,
+      type: data.type === "fisica" ? TypeCustomer.fisica : TypeCustomer.juridica,
+      documentType: data.documentType === "CPF" ? DocumentType.cpf : DocumentType.cnpj,
+      documentNumber: data.documentNumber,
+      email: data.email,
+      phone: data.phone
+    }
+
+    const payloadAddress: RegisterAddress = {
+      street: data.address.street,
+      establishmentNumber: data.address.number,
+      complement: data.address.complement,
+      neighborhood: data.address.neighborhood,
+      city: data.address.city,
+      state: data.address.state,
+      zipCode: data.address.zipCode
+    }
+
+    const payloadBankDetails: RegisterBankDetails = {
+      bank: data.bankDetails?.bank || "",
+      agency: data.bankDetails?.agency || "",
+      account: data.bankDetails?.account || "",
+      accountType:
+        data.bankDetails?.accountType === "Poupança"
+          ? AccountType.poupanca
+          : AccountType.corrente,
+    }
+
+    const result = await createCustomer({
+      customer: payloadCustomer,
+      address: payloadAddress,
+      bankDetails: data.hasBankDetails ? payloadBankDetails : undefined
+    });
+
+    onOpenChange(!result);
   };
 
   const watchType = form.watch("type");
@@ -85,10 +117,10 @@ export function CreateCustomerForm({ onSubmit, onOpenChange }: CreateCustomerFor
               <FormItem>
                 <FormLabel>Tipo</FormLabel>
                 <Select
-                  onValueChange={(value: "Física" | "Jurídica") => {
+                  onValueChange={(value: string) => {
                     field.onChange(value);
-                    setDocumentType(value === "Física" ? "CPF" : "CNPJ");
-                    form.setValue("documentType", value === "Física" ? "CPF" : "CNPJ");
+                    setDocumentType(value === "fisica" ? "CPF" : "CNPJ");
+                    form.setValue("documentType", value === "fisica" ? "CPF" : "CNPJ");
                   }}
                   defaultValue={field.value}
                 >
@@ -98,8 +130,8 @@ export function CreateCustomerForm({ onSubmit, onOpenChange }: CreateCustomerFor
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
-                    <SelectItem value="Física">Pessoa Física</SelectItem>
-                    <SelectItem value="Jurídica">Pessoa Jurídica</SelectItem>
+                    <SelectItem value="fisica">Pessoa Física</SelectItem>
+                    <SelectItem value="juridica">Pessoa Jurídica</SelectItem>
                   </SelectContent>
                 </Select>
                 <FormMessage />
@@ -112,17 +144,17 @@ export function CreateCustomerForm({ onSubmit, onOpenChange }: CreateCustomerFor
             name="documentNumber"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>{watchType === "Física" ? "CPF" : "CNPJ"}</FormLabel>
+                <FormLabel>{watchType === "fisica" ? "CPF" : "CNPJ"}</FormLabel>
                 <FormControl>
                   <InputMask
-                    mask={watchType === "Física" ? "999.999.999-99" : "99.999.999/9999-99"}
+                    mask={watchType === "fisica" ? "999.999.999-99" : "99.999.999/9999-99"}
                     value={field.value}
                     onChange={field.onChange}
                   >
                     {(inputProps: any) => (
                       <Input
                         {...inputProps}
-                        placeholder={watchType === "Física" ? "000.000.000-00" : "00.000.000/0000-00"}
+                        placeholder={watchType === "fisica" ? "000.000.000-00" : "00.000.000/0000-00"}
                       />
                     )}
                   </InputMask>
@@ -373,7 +405,9 @@ export function CreateCustomerForm({ onSubmit, onOpenChange }: CreateCustomerFor
           >
             Cancelar
           </Button>
-          <Button type="submit">Salvar</Button>
+          <Button type="submit" disabled={isPending}>
+            {isPending ? "Salvando..." : "Salvar"}
+          </Button>
         </div>
       </form>
     </Form>

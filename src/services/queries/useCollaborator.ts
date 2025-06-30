@@ -1,14 +1,11 @@
 import { RegisterCollaboratorPayload } from "@/types/types-collaborator";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { collaboratorService } from "../end-points/collaborators";
 import { toast } from "@/hooks/use-toast";
 
 export const useCreateCollaborator = () => {
-  const queryClient = useQueryClient();
-  
   return useMutation({
-    mutationFn: (data: RegisterCollaboratorPayload) => 
-      collaboratorService.create(data),
+    mutationFn: (data: RegisterCollaboratorPayload) => collaboratorService.create(data),
     onError: (err) => {
       console.log(err)
 
@@ -19,9 +16,6 @@ export const useCreateCollaborator = () => {
       })
     },
     onSuccess: () => {
-      // Invalida todas as listas para recarregar os dados
-      // queryClient.invalidateQueries(productKeys.lists())
-
       toast({
         title: "Registrado",
         description: "Usuário registrado com sucesso",

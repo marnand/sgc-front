@@ -1,4 +1,5 @@
 import { validateCNPJ, validateCPF } from "@/lib/utils";
+import { DocumentType } from "@/types/types-customer";
 import { z } from "zod";
 
 export const customerSchema = z.object({
@@ -7,7 +8,7 @@ export const customerSchema = z.object({
     .refine((value) => value.trim().includes(" "), {
       message: "Digite nome completo"
     }),
-  type: z.enum(["Física", "Jurídica"]),
+  type: z.enum(["fisica", "juridica"]),
   documentType: z.enum(["CPF", "CNPJ"]),
   documentNumber: z.string()
     .min(1, "Documento é obrigatório")
