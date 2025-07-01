@@ -1,5 +1,4 @@
 import { validateCNPJ, validateCPF } from "@/lib/utils";
-import { DocumentType } from "@/types/types-customer";
 import { z } from "zod";
 
 export const customerSchema = z.object({
