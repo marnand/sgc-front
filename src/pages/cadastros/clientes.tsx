@@ -1,6 +1,5 @@
 import AppShell from "@/components/layout/AppShell";
 import { useState } from "react";
-import { useToast } from "@/hooks/use-toast";
 import PageHeader from "@/components/clientes/PageHeader";
 import { CustomerTable } from "@/components/clientes/CustomerTable";
 import { Customer } from "@/types/types-customer";
@@ -12,9 +11,10 @@ import { Button } from "@/components/ui/button";
 import { CorePagination } from "@/components/core/CorePagination";
 
 export default function Clientes() {
-  const { toast } = useToast();
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
+  const [dialogMode, setDialogMode] = useState<"add" | "edit" | "view">("add");
+  const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(null);
 
   // Mock data (would be replaced by API call)
   const clientes: Customer[] = [
@@ -147,13 +147,21 @@ export default function Clientes() {
   } = usePagination(filteredClientes);
 
   const handleViewCustomer = (customer: Customer) => {
-    // Implementar visualização do cliente
-    console.log("Visualizar cliente:", customer);
+    setSelectedCustomer(customer);
+    setDialogMode("view");
+    setIsAddDialogOpen(true);
   };
 
   const handleEditCustomer = (customer: Customer) => {
-    // Implementar edição do cliente
-    console.log("Editar cliente:", customer);
+    setSelectedCustomer(customer);
+    setDialogMode("edit");
+    setIsAddDialogOpen(true);
+  };
+
+  const handleAddCustomer = () => {
+    setSelectedCustomer(null);
+    setDialogMode("add");
+    setIsAddDialogOpen(true);
   };
 
   const handleDeleteCustomer = (customer: Customer) => {
@@ -164,7 +172,7 @@ export default function Clientes() {
   return (
     <AppShell>
       <div className="flex flex-col space-y-6">
-        <PageHeader onAddClick={() => setIsAddDialogOpen(true)} />
+        <PageHeader onAddClick={() => handleAddCustomer()} />
 
         {/* Search and filter */}
         <div className="flex flex-col sm:flex-row gap-4">
@@ -205,6 +213,8 @@ export default function Clientes() {
         {/* New User Modal */}
         <AddCustomerDialog
           open={isAddDialogOpen}
+          mode={dialogMode}
+          customer={selectedCustomer}
           onOpenChange={setIsAddDialogOpen}
         />
       </div>

@@ -19,7 +19,8 @@ export default function PageHeader({ onAddClick }: PageHeaderProps) {
         <Button variant="outline" className="flex gap-2 items-center">
           <FileDown className="h-4 w-4" />
           Exportar
-        </Button>        <Button className="flex gap-2 items-center" onClick={onAddClick}>
+        </Button>
+        <Button className="flex gap-2 items-center" onClick={onAddClick}>
           <Plus className="h-4 w-4" />
           Novo Cliente
         </Button>
