@@ -1,23 +1,30 @@
 import AppShell from "@/components/layout/AppShell";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import PageHeader from "@/components/clientes/PageHeader";
 import { CustomerTable } from "@/components/clientes/CustomerTable";
-import { Customer } from "@/types/types-customer";
+import { TableCustomer } from "@/types/types-customer";
 import { AddCustomerDialog } from "@/components/clientes/AddCustomerDialog";
 import { usePagination } from "@/hooks/use-pagination";
 import { ChevronDown, Filter, Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { CorePagination } from "@/components/core/CorePagination";
+import { useGetAllCustomers } from "@/services/queries/useCustomer";
 
 export default function Clientes() {
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [dialogMode, setDialogMode] = useState<"add" | "edit" | "view">("add");
-  const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(null);
+  const [selectedCustomer, setSelectedCustomer] = useState<TableCustomer | null>(null);
+
+  const { data: customers } = useGetAllCustomers()
+
+  useEffect(() => {
+    console.log('customers', customers)
+  }, [customers]);
 
   // Mock data (would be replaced by API call)
-  const clientes: Customer[] = [
+  const clientes: TableCustomer[] = [
     {
       id: "1",
       name: "João Silva",
@@ -33,9 +40,7 @@ export default function Clientes() {
         city: "São Paulo",
         state: "SP",
         zipCode: "01234-567"
-      },
-      createdAt: "2023-01-15T10:30:00Z",
-      updatedAt: "2023-06-20T14:45:00Z"
+      }
     },
     {
       id: "2",
@@ -53,9 +58,7 @@ export default function Clientes() {
         city: "São Paulo",
         state: "SP",
         zipCode: "01310-100"
-      },
-      createdAt: "2023-02-10T09:15:00Z",
-      updatedAt: "2023-05-18T11:20:00Z"
+      }
     },
     {
       id: "3",
@@ -79,9 +82,7 @@ export default function Clientes() {
         agency: "1234",
         account: "56789-0",
         accountType: "Corrente"
-      },
-      createdAt: "2022-11-05T14:30:00Z",
-      updatedAt: "2023-07-02T16:10:00Z"
+      }
     },
     {
       id: "4",
@@ -98,9 +99,7 @@ export default function Clientes() {
         city: "São Paulo",
         state: "SP",
         zipCode: "01304-001"
-      },
-      createdAt: "2023-03-25T10:45:00Z",
-      updatedAt: "2023-06-30T09:30:00Z"
+      }
     },
     {
       id: "5",
@@ -124,9 +123,7 @@ export default function Clientes() {
         agency: "4567",
         account: "12345-6",
         accountType: "Corrente"
-      },
-      createdAt: "2022-10-18T11:20:00Z",
-      updatedAt: "2023-07-10T15:35:00Z"
+      }
     }
   ];
 
@@ -146,13 +143,13 @@ export default function Clientes() {
     endIndex
   } = usePagination(filteredClientes);
 
-  const handleViewCustomer = (customer: Customer) => {
+  const handleViewCustomer = (customer: TableCustomer) => {
     setSelectedCustomer(customer);
     setDialogMode("view");
     setIsAddDialogOpen(true);
   };
 
-  const handleEditCustomer = (customer: Customer) => {
+  const handleEditCustomer = (customer: TableCustomer) => {
     setSelectedCustomer(customer);
     setDialogMode("edit");
     setIsAddDialogOpen(true);
@@ -164,7 +161,7 @@ export default function Clientes() {
     setIsAddDialogOpen(true);
   };
 
-  const handleDeleteCustomer = (customer: Customer) => {
+  const handleDeleteCustomer = (customer: TableCustomer) => {
     // Implementar exclusão do cliente
     console.log("Excluir cliente:", customer);
   };

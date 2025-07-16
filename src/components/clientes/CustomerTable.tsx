@@ -1,13 +1,13 @@
 import { formatCNPJ, formatCPF } from "@/lib/utils";
 import { CoreTable, Column, Action } from "@/components/core/CoreTable";
 import { Eye, Edit, Trash } from "lucide-react";
-import { Customer } from "@/types/types-customer";
+import { TableCustomer } from "@/types/types-customer";
 
 interface CustomerTableProps {
-  customers: Customer[];
-  onView?: (customer: Customer) => void;
-  onEdit?: (customer: Customer) => void;
-  onDelete?: (customer: Customer) => void;
+  customers: TableCustomer[];
+  onView?: (customer: TableCustomer) => void;
+  onEdit?: (customer: TableCustomer) => void;
+  onDelete?: (customer: TableCustomer) => void;
 }
 
 export function CustomerTable({
@@ -16,7 +16,7 @@ export function CustomerTable({
   onEdit,
   onDelete,
 }: CustomerTableProps) {
-  const columns: Column<Customer>[] = [
+  const columns: Column<TableCustomer>[] = [
     {
       header: "Nome",
       accessor: "name",
@@ -48,7 +48,7 @@ export function CustomerTable({
     },
   ];
 
-  const actions: Action<Customer>[] = [
+  const actions: Action<TableCustomer>[] = [
     onView && {
       icon: <Eye className="h-4 w-4" />,
       label: "Visualizar",
@@ -65,10 +65,10 @@ export function CustomerTable({
       onClick: onDelete,
       className: "text-destructive",
     },
-  ].filter(Boolean) as Action<Customer>[];
+  ].filter(Boolean) as Action<TableCustomer>[];
 
   return (
-    <CoreTable<Customer>
+    <CoreTable<TableCustomer>
       data={customers}
       columns={columns}
       actions={actions}

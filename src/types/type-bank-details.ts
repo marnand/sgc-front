@@ -4,14 +4,7 @@ export enum AccountType {
 }
 
 export interface BankDetails {
-  id: string;
-  bank: string;
-  agency: string;
-  account: string;
-  accountType: AccountType;
-}
-
-export interface RegisterBankDetails {
+  id: string | null;
   bank: string;
   agency: string;
   account: string;

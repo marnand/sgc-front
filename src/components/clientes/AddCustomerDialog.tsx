@@ -1,11 +1,11 @@
 import { CoreDialog } from "@/components/core/CoreDialog";
 import { CreateCustomerForm } from "./CreateCustomerForm";
-import { Customer } from "@/types/types-customer";
+import { TableCustomer } from "@/types/types-customer";
 
 interface AddCustomerDialogProps {
   open: boolean
   mode?: "add" | "edit" | "view"
-  customer?: Customer | null
+  customer?: TableCustomer | null
   onOpenChange: (open: boolean) => void
 }
 
