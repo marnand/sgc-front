@@ -1,7 +1,7 @@
-import { useMutation } from "@tanstack/react-query"
+import { useMutation, useQuery } from "@tanstack/react-query"
 import { customersService } from "../end-points/customers"
 import { toast } from "@/hooks/use-toast"
-import { RegisterCompleteCustomer } from "@/types/types-customer"
+import { CompleteCustomer } from "@/types/types-customer"
 
 type ApiError = {
   data: {
@@ -13,8 +13,8 @@ type ApiError = {
 }
 
 export const useCreateCustomer = () => {
-  return useMutation<boolean, ApiError, RegisterCompleteCustomer>({
-    mutationFn: (data) => customersService.register(data),
+  return useMutation<boolean, ApiError, CompleteCustomer>({
+    mutationFn: async (data) => await customersService.register(data),
     onSuccess: () => {
       toast({
         title: "Cliente criado",
@@ -42,5 +42,14 @@ export const useCreateCustomer = () => {
         variant: "destructive",
       })
     }
+  })
+}
+
+export const useGetAllCustomers = () => {
+  return useQuery({
+    queryKey: ["customers"],
+    queryFn: customersService.getAll,
+    // Cache por mais tempo pois categorias mudam com menos frequência
+    staleTime: 1000 * 60 * 60, // 1 hora
   })
 }

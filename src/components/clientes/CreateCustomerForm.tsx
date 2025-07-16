@@ -3,19 +3,19 @@ import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, For
 import { Input } from "../ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
 import { Switch } from "../ui/switch";
-import { Customer, DocumentType, RegisterCustomer, TypeCustomer } from "@/types/types-customer";
+import { TableCustomer, DocumentType, Customer, TypeCustomer } from "@/types/types-customer";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import InputMask from "react-input-mask";
 import { CustomerFormData, customerSchema } from "./CreateCustomerSchema";
 import { useCreateCustomer } from "@/services/queries/useCustomer";
-import { RegisterAddress } from "@/types/type-address";
-import { AccountType, RegisterBankDetails } from "@/types/type-bank-details";
+import { Address } from "@/types/type-address";
+import { AccountType, BankDetails } from "@/types/type-bank-details";
 
 interface CreateCustomerFormProps {
   mode?: "add" | "edit" | "view"
-  customer?: Customer | null
+  customer?: TableCustomer | null
   onOpenChange: (open: boolean) => void
 }
 
@@ -53,16 +53,18 @@ export function CreateCustomerForm({ mode = "add", customer, onOpenChange }: Cre
   });
 
   const handleSubmit = async (data: CustomerFormData) => {
-    const payloadCustomer: RegisterCustomer = {
+    const payloadCustomer: Customer = {
+      id: null,
       name: data.name,
       type: data.type === "fisica" ? TypeCustomer.fisica : TypeCustomer.juridica,
       documentType: data.documentType === "CPF" ? DocumentType.cpf : DocumentType.cnpj,
       documentNumber: data.documentNumber,
       email: data.email,
-      phone: data.phone
+      phone: data.phone,
     }
 
-    const payloadAddress: RegisterAddress = {
+    const payloadAddress: Address = {
+      id: null,
       street: data.address.street,
       establishmentNumber: data.address.number,
       complement: data.address.complement,
@@ -72,7 +74,8 @@ export function CreateCustomerForm({ mode = "add", customer, onOpenChange }: Cre
       zipCode: data.address.zipCode
     }
 
-    const payloadBankDetails: RegisterBankDetails = {
+    const payloadBankDetails: BankDetails = {
+      id: null,
       bank: data.bankDetails?.bank || "",
       agency: data.bankDetails?.agency || "",
       account: data.bankDetails?.account || "",
@@ -83,7 +86,7 @@ export function CreateCustomerForm({ mode = "add", customer, onOpenChange }: Cre
     }
 
     const result = await createCustomer({
-      customer: payloadCustomer,
+      ...payloadCustomer,
       address: payloadAddress,
       bankDetails: data.hasBankDetails ? payloadBankDetails : undefined
     });

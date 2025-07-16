@@ -1,5 +1,5 @@
-import { RegisterAddress } from "./type-address";
-import { RegisterBankDetails } from "./type-bank-details";
+import { Address } from "./type-address";
+import { BankDetails } from "./type-bank-details";
 
 export enum TypeCustomer {
   fisica = 1,
@@ -11,7 +11,7 @@ export enum DocumentType {
   cnpj = 2,
 }
 
-export interface Customer {
+export interface TableCustomer {
   id: string;
   name: string;
   type: "Física" | "Jurídica";
@@ -34,11 +34,10 @@ export interface Customer {
     account: string;
     accountType: "Corrente" | "Poupança";
   };
-  createdAt: string;
-  updatedAt: string;
 }
 
-export interface RegisterCustomer {
+export interface Customer {
+  id: string | null;
   name: string;
   type: TypeCustomer;
   documentType: DocumentType;
@@ -47,8 +46,7 @@ export interface RegisterCustomer {
   phone: string;
 }
 
-export interface RegisterCompleteCustomer {
-  customer: RegisterCustomer
-  address: RegisterAddress
-  bankDetails?: RegisterBankDetails
+export interface CompleteCustomer extends Customer {
+  address: Address
+  bankDetails?: BankDetails
 }
